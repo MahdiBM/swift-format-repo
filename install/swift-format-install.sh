@@ -15,7 +15,6 @@ fi
 
 if has_command "wget" ; then
     echo "-------- wget already installed. That's nice!"
-    exit 0
 else
     echo "-------- Will install wget"
     apt update -y
@@ -26,3 +25,5 @@ fi
 wget --retry-connrefused https://github.com/MahdiBM/swift-format-repo/raw/main/executables/swiftformat-0.54.2-linux-arm64.deb -o swiftformat-0.54.2.deb
 dpkg -i ./swiftformat-0.54.2.deb
 rm ./swiftformat-0.54.2.deb
+
+echo "-------- 'swiftformat' installation successful"
