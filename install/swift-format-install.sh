@@ -9,7 +9,7 @@ has_command () {
 }
 
 print () {
-    echo "$1"
+    echo $1
     echo ""
 }
 
