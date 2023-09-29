@@ -5,7 +5,7 @@
 set -o errexit
 
 has_command () {
-    command -v "$1" > /dev/null
+    command "$1" -v > /dev/null
 }
 
 if ! has_command "swiftformat" ; then
