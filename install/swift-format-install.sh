@@ -9,25 +9,30 @@ has_command () {
 }
 
 print () {
+    echo "-------- "
     echo $1
     echo ""
 }
 
 if has_command "swiftformat" ; then
-    print "-------- swiftformat already installed. Will skip re-installation."
+    print "swiftformat already installed. Will skip re-installation."
     exit 0
 fi
 
 if has_command "wget" ; then
-    print "-------- wget already installed. That's nice!"
+    print "wget already installed. That's nice!"
 else
-    print "-------- Will install wget"
+    print "Will install wget"
     apt update -y
     apt install wget -y
-    print "-------- wget installation successful"
+    print "wget installation successful"
 fi
 
 wget --retry-connrefused -O swiftformat-0.54.2.deb https://github.com/MahdiBM/swift-format-repo/raw/main/executables/swiftformat-0.54.2-linux-arm64.deb
-dpkg -i swiftformat-0.54.2.deb
+dpkg -i swiftformat-0.54.2.deb | rm swiftformat-0.54.2.deb
 
-print "-------- 'swiftformat' installation successful"
+if has_command "swiftformat" ; then
+    print "'swiftformat' installation successful"
+else
+    print "could not install swiftformat"
+fi
