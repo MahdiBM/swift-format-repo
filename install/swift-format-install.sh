@@ -27,7 +27,7 @@ else
     print "-------- wget installation successful"
 fi
 
-wget --retry-connrefused -O - https://github.com/MahdiBM/swift-format-repo/raw/main/executables/swiftformat-0.54.2-linux-arm64.deb -O swiftformat-0.54.2.deb
+wget --retry-connrefused -O swiftformat-0.54.2.deb https://github.com/MahdiBM/swift-format-repo/raw/main/executables/swiftformat-0.54.2-linux-arm64.deb
 dpkg -i swiftformat-0.54.2.deb
 
 print "-------- 'swiftformat' installation successful"
