@@ -9,9 +9,8 @@ has_command () {
 }
 
 print () {
-    echo "-------- "
+    echo -n "---------------- "
     echo $1
-    echo ""
 }
 
 if has_command "swiftformat" ; then
@@ -33,7 +32,7 @@ dpkg -i swiftformat-0.54.2.deb
 rm ./swiftformat-0.54.2.deb
 
 if has_command "swiftformat" ; then
-    print "'swiftformat' installation successful"
+    print "swiftformat installation successful"
 else
     print "could not install swiftformat"
 fi
