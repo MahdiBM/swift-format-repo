@@ -29,7 +29,8 @@ else
 fi
 
 wget --retry-connrefused -O swiftformat-0.54.2.deb https://github.com/MahdiBM/swift-format-repo/raw/main/executables/swiftformat-0.54.2-linux-arm64.deb
-dpkg -i swiftformat-0.54.2.deb | rm swiftformat-0.54.2.deb
+dpkg -i swiftformat-0.54.2.deb
+rm ./swiftformat-0.54.2.deb
 
 if has_command "swiftformat" ; then
     print "'swiftformat' installation successful"
