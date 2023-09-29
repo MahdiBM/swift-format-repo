@@ -5,10 +5,10 @@
 set -o errexit
 
 has_command () {
-    command "$1" -v > /dev/null
+    command -v "$1" > /dev/null
 }
 
-if ! has_command "swiftformat" ; then
+if has_command "swiftformat" ; then
     echo "-------- swiftformat already installed. Will skip re-installation."
     exit 0
 fi
@@ -16,7 +16,7 @@ fi
 if has_command "wget" ; then
     echo "-------- wget already installed. That's nice!"
     exit 0
-elif
+else
     echo "-------- Will install wget"
     apt update -y
     apt install wget -y
