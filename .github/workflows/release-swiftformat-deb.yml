@@ -26,8 +26,8 @@ jobs:
           apt update -y && apt install curl -y
           TAG=${{ steps.fetch_latest_tag.outputs.tag }}
           RELEASE=$(
-            curl -s https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG
-              -w "%{http_code}"
+            curl -s https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG \
+              -w "%{http_code}" \
               -o /dev/null
           )
           echo "RELEASE is $RELEASE"
