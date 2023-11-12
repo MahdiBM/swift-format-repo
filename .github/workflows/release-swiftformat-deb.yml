@@ -51,7 +51,7 @@ jobs:
           mkdir -p swiftformat/usr/local/bin
           cp .build/release/swiftformat swiftformat/usr/local/bin
           echo "Package: swiftformat\nVersion: $TAG\nMaintainer: Mahdi Bahrami <contact@mahdibm.com>\nArchitecture: arm64\nDescription: Nick Lockwood's SwiftFormat: A formatting tool for Swift programming language" > swiftformat/DEBIAN/control
-          dpkg-deb --build swiftformat swiftformat-$TAG-linux-arm64.deb
+          dpkg-deb --build swiftformat-$TAG-linux-arm64.deb
 
       - name: Create release
         id: create_release
