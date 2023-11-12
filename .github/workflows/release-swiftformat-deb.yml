@@ -30,7 +30,6 @@ jobs:
               -w "%{http_code}" \
               -o /dev/null
           )
-          echo "RELEASE is $RELEASE"
           if [ "$RELEASE" = "200" ]; then
             echo "Release for tag $TAG already exists. Stopping workflow."
             exit 1
