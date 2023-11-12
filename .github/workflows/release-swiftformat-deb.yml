@@ -11,7 +11,7 @@ jobs:
     container: swift:5.9-jammy
 
     steps:
-      - name: Fetch Latest Tag from SwiftFormat Repository
+      - name: Fetch latest SwiftFormat tag
         id: fetch_latest_tag
         run: |
           LATEST_TAG=$(
@@ -22,9 +22,10 @@ jobs:
           )
           echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
 
-      - name: Check if Release Already Exists
+      - name: Check if release already exists
         id: check-release
         run: |
+          apt update -y && apt install curl -y
           TAG=${{ steps.fetch_latest_tag.outputs.tag }}
           RELEASE=$(
             curl -s https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG \
@@ -35,7 +36,7 @@ jobs:
             exit 1
           fi
 
-      - name: Checkout Repository
+      - name: Checkout SwiftFormat
         uses: actions/checkout@v4
         with:
           repository: nicklockwood/SwiftFormat
@@ -44,7 +45,7 @@ jobs:
       - name: Build SwiftFormat with Static Standard Library
         run: swift build -c release --static-stdlib
 
-      - name: Create .deb Package
+      - name: Create .deb package
         run: |
           TAG=${{ steps.fetch_latest_tag.outputs.tag }}
           mkdir -p swiftformat/DEBIAN
@@ -52,7 +53,7 @@ jobs:
           echo "Package: swiftformat\nVersion: $TAG\nMaintainer: Mahdi Bahrami <contact@mahdibm.com>\nArchitecture: arm64\nDescription: Nick Lockwood's SwiftFormat: A formatting tool for Swift programming language" > swiftformat/DEBIAN/control
           dpkg-deb --build swiftformat swiftformat-$TAG-linux-arm64.deb
 
-      - name: Create Release
+      - name: Create release
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -63,7 +64,7 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload .deb Package to Release
+      - name: Upload .deb Package to release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
