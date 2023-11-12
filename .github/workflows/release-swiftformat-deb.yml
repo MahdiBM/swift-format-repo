@@ -16,7 +16,7 @@ jobs:
         run: |
           apt update -y && apt install jq curl -y
           echo "tag=$(
-            curl https://api.github.com/repos/discordbm/discordbm/releases/latest | \
+            curl https://api.github.com/repos/nicklockwood/SwiftFormat/releases/latest | \
               jq -r '.tag_name'
           )" >> $GITHUB_OUTPUT
 
