@@ -31,7 +31,7 @@ jobs:
               -o /dev/null
           )
           echo "RELEASE is $RELEASE"
-          if [ "$RELEASE" == "200" ]; then
+          if [ "$RELEASE" = "200" ]; then
             echo "Release for tag $TAG already exists. Stopping workflow."
             exit 1
           fi
@@ -49,6 +49,7 @@ jobs:
         run: |
           TAG=${{ steps.fetch_latest_tag.outputs.tag }}
           mkdir -p swiftformat/DEBIAN
+          mkdir -p swiftformat/usr/local/bin
           cp .build/release/swiftformat swiftformat/usr/local/bin
           echo "Package: swiftformat\nVersion: $TAG\nMaintainer: Mahdi Bahrami <contact@mahdibm.com>\nArchitecture: arm64\nDescription: Nick Lockwood's SwiftFormat: A formatting tool for Swift programming language" > swiftformat/DEBIAN/control
           dpkg-deb --build swiftformat swiftformat-$TAG-linux-arm64.deb
