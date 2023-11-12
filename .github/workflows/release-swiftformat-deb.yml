@@ -16,7 +16,7 @@ jobs:
         run: |
           LATEST_TAG=$(
             git ls-remote --tags --refs --sort="v:refname" \
-              git://github.com/nicklockwood/SwiftFormat.git | \
+              https://github.com/nicklockwood/SwiftFormat.git | \
               tail -n1 | \
               sed 's/.*\///'
           )
@@ -31,7 +31,7 @@ jobs:
             curl -s https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG \
               -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}"
           )
-          if [[ "$RELEASE" != *"Not Found"* ]]; then
+          if [ "$RELEASE" != *"Not Found"* ]; then
             echo "Release for tag $TAG already exists. Stopping workflow."
             exit 1
           fi
@@ -42,8 +42,8 @@ jobs:
           repository: nicklockwood/SwiftFormat
           ref: ${{ steps.fetch_latest_tag.outputs.tag }}
 
-      - name: Build SwiftFormat with Static Standard Library
-        run: swift build -c release --static-stdlib
+      - name: Build SwiftFormat
+        run: swift build -c release --static-swift-stdlib
 
       - name: Create .deb package
         run: |
