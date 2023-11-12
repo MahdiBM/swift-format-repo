@@ -1,0 +1,74 @@
+name: Build and Release SwiftFormat .deb Package
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *" # Daily at midnight
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    container: swift:5.9-jammy
+
+    steps:
+      - name: Fetch Latest Tag from SwiftFormat Repository
+        id: fetch_latest_tag
+        run: |
+          LATEST_TAG=$(
+            git ls-remote --tags --refs --sort="v:refname" \
+              git://github.com/nicklockwood/SwiftFormat.git | \
+              tail -n1 | \
+              sed 's/.*\///'
+          )
+          echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+
+      - name: Check if Release Already Exists
+        id: check-release
+        run: |
+          TAG=${{ steps.fetch_latest_tag.outputs.tag }}
+          RELEASE=$(
+            curl -s https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}"
+          )
+          if [[ "$RELEASE" != *"Not Found"* ]]; then
+            echo "Release for tag $TAG already exists. Stopping workflow."
+            exit 1
+          fi
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          repository: nicklockwood/SwiftFormat
+          ref: ${{ steps.fetch_latest_tag.outputs.tag }}
+
+      - name: Build SwiftFormat with Static Standard Library
+        run: swift build -c release --static-stdlib
+
+      - name: Create .deb Package
+        run: |
+          TAG=${{ steps.fetch_latest_tag.outputs.tag }}
+          mkdir -p swiftformat/DEBIAN
+          cp .build/release/swiftformat swiftformat/usr/local/bin
+          echo "Package: swiftformat\nVersion: $TAG\nMaintainer: Mahdi Bahrami <contact@mahdibm.com>\nArchitecture: arm64\nDescription: Nick Lockwood's SwiftFormat: A formatting tool for Swift programming language" > swiftformat/DEBIAN/control
+          dpkg-deb --build swiftformat swiftformat-$TAG-linux-arm64.deb
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.fetch_latest_tag.outputs.tag }}
+          release_name: SwiftFormat Release ${{ steps.fetch_latest_tag.outputs.tag }}
+          draft: false
+          prerelease: false
+
+      - name: Upload .deb Package to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./swiftformat/swiftformat-${{ steps.fetch_latest_tag.outputs.tag }}-linux-arm64.deb
+          asset_name: swiftformat-${{ steps.fetch_latest_tag.outputs.tag }}-linux-arm64.deb
+          asset_content_type: application/octet-stream
