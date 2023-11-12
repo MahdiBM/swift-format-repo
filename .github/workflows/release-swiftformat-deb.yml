@@ -50,8 +50,8 @@ jobs:
           mkdir -p swiftformat/DEBIAN
           mkdir -p swiftformat/usr/local/bin
           cp .build/release/swiftformat swiftformat/usr/local/bin
-          echo "Package: swiftformat\nVersion: $TAG\nMaintainer: Mahdi Bahrami <contact@mahdibm.com>\nArchitecture: arm64\nDescription: Nick Lockwood's SwiftFormat: A formatting tool for Swift programming language" > swiftformat/DEBIAN/control
-          dpkg-deb --build swiftformat-$TAG-linux-arm64.deb
+          echo "Package: swiftformat\nVersion: $TAG\nMaintainer: Mahdi Bahrami <contact@mahdibm.com>\nArchitecture: amd64\nDescription: Nick Lockwood's SwiftFormat: A formatting tool for Swift programming language" > swiftformat/DEBIAN/control
+          dpkg-deb --build swiftformat swiftformat-$TAG-linux-amd64.deb
 
       - name: Create release
         id: create_release
@@ -70,6 +70,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./swiftformat/swiftformat-${{ steps.fetch_latest_tag.outputs.tag }}-linux-arm64.deb
-          asset_name: swiftformat-${{ steps.fetch_latest_tag.outputs.tag }}-linux-arm64.deb
+          asset_path: ./swiftformat-${{ steps.fetch_latest_tag.outputs.tag }}-linux-amd64.deb
+          asset_name: swiftformat-${{ steps.fetch_latest_tag.outputs.tag }}-linux-amd64.deb
           asset_content_type: application/octet-stream
