@@ -14,13 +14,11 @@ jobs:
       - name: Fetch latest SwiftFormat tag
         id: fetch_latest_tag
         run: |
-          LATEST_TAG=$(
-            git ls-remote --tags --refs --sort="v:refname" \
-              https://github.com/nicklockwood/SwiftFormat.git | \
-              tail -n1 | \
-              sed 's/.*\///'
-          )
-          echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+          apt update -y && apt install jq curl -y
+          echo "tag=$(
+            curl https://api.github.com/repos/discordbm/discordbm/releases/latest | \
+              jq -r '.tag_name'
+          )" >> $GITHUB_OUTPUT
 
       - name: Check if release already exists
         id: check-release
@@ -28,11 +26,12 @@ jobs:
           apt update -y && apt install curl -y
           TAG=${{ steps.fetch_latest_tag.outputs.tag }}
           RELEASE=$(
-            curl -s https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG \
-              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}"
+            curl -s https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG
               -w "%{http_code}"
+              -o /dev/null
           )
-          if [ "$RELEASE" != "200" ]; then
+          echo "RELEASE is $RELEASE"
+          if [ "$RELEASE" == "200" ]; then
             echo "Release for tag $TAG already exists. Stopping workflow."
             exit 1
           fi
