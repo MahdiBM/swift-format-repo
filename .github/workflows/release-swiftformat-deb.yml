@@ -3,7 +3,7 @@ name: Build and Release SwiftFormat .deb Package
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *" # Daily at midnight
+    - cron: "09 0 * * *" # Daily at midnight
 
 jobs:
   build-and-release:
