@@ -32,7 +32,7 @@ jobs:
           )
           if [ "$RELEASE" = "200" ]; then
             echo "Release for tag $TAG already exists. Stopping workflow."
-            exit 1
+            exit 0
           fi
 
       - name: Checkout SwiftFormat
