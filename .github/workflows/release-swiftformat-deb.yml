@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Fetch latest SwiftFormat tag
-        id: fetch_latest_tag
+        id: fetch-latest-tag
         run: |
           apt update -y && apt install jq curl -y
           echo "tag=$(
@@ -24,7 +24,7 @@ jobs:
         id: check-already-exists
         run: |
           apt update -y && apt install curl -y
-          TAG=${{ steps.fetch_latest_tag.outputs.tag }}
+          TAG=${{ steps.fetch-latest-tag.outputs.tag }}
           RELEASE=$(
             curl -s https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG \
               -w "%{http_code}" \
@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: nicklockwood/SwiftFormat
-          ref: ${{ steps.fetch_latest_tag.outputs.tag }}
+          ref: ${{ steps.fetch-latest-tag.outputs.tag }}
 
       - name: Build SwiftFormat
         if: ${{ steps.check-already-exists.outputs.result == 'false' }}
@@ -52,7 +52,7 @@ jobs:
       - name: Create .deb package
         if: ${{ steps.check-already-exists.outputs.result == 'false' }}
         run: |
-          TAG=${{ steps.fetch_latest_tag.outputs.tag }}
+          TAG=${{ steps.fetch-latest-tag.outputs.tag }}
           mkdir -p swiftformat/DEBIAN
           mkdir -p swiftformat/usr/local/bin
           cp .build/release/swiftformat swiftformat/usr/local/bin
@@ -66,8 +66,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.fetch_latest_tag.outputs.tag }}
-          release_name: SwiftFormat Release ${{ steps.fetch_latest_tag.outputs.tag }}
+          tag_name: ${{ steps.fetch-latest-tag.outputs.tag }}
+          release_name: SwiftFormat Release ${{ steps.fetch-latest-tag.outputs.tag }}
           draft: false
           prerelease: false
 
@@ -77,6 +77,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create-release.outputs.upload_url }}
-          asset_path: ./swiftformat-${{ steps.fetch_latest_tag.outputs.tag }}-linux-amd64.deb
-          asset_name: swiftformat-${{ steps.fetch_latest_tag.outputs.tag }}-linux-amd64.deb
+          asset_path: ./swiftformat-${{ steps.fetch-latest-tag.outputs.tag }}-linux-amd64.deb
+          asset_name: swiftformat-${{ steps.fetch-latest-tag.outputs.tag }}-linux-amd64.deb
           asset_content_type: application/octet-stream
