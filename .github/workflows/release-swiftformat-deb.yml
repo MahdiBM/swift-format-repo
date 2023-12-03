@@ -21,7 +21,7 @@ jobs:
           )" >> $GITHUB_OUTPUT
 
       - name: Check if release already exists
-        id: check-release
+        id: check-already-exists
         run: |
           apt update -y && apt install curl -y
           TAG=${{ steps.fetch_latest_tag.outputs.tag }}
@@ -31,20 +31,26 @@ jobs:
               -o /dev/null
           )
           if [ "$RELEASE" = "200" ]; then
-            echo "Release for tag $TAG already exists. Stopping workflow."
-            exit 0
+            echo "Release for tag $TAG already exists."
+            echo "true" >> $GITHUB_OUTPUT
+          else
+            echo "Release for tag $TAG does not exist yet."
+            echo "false" >> $GITHUB_OUTPUT
           fi
 
       - name: Checkout SwiftFormat
+        if: ${{ steps.check-already-exists.outputs.result == 'false' }}
         uses: actions/checkout@v4
         with:
           repository: nicklockwood/SwiftFormat
           ref: ${{ steps.fetch_latest_tag.outputs.tag }}
 
       - name: Build SwiftFormat
+        if: ${{ steps.check-already-exists.outputs.result == 'false' }}
         run: swift build -c release --static-swift-stdlib
 
       - name: Create .deb package
+        if: ${{ steps.check-already-exists.outputs.result == 'false' }}
         run: |
           TAG=${{ steps.fetch_latest_tag.outputs.tag }}
           mkdir -p swiftformat/DEBIAN
@@ -54,7 +60,8 @@ jobs:
           dpkg-deb --build swiftformat swiftformat-$TAG-linux-amd64.deb
 
       - name: Create release
-        id: create_release
+        if: ${{ steps.check-already-exists.outputs.result == 'false' }}
+        id: create-release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -69,7 +76,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
           asset_path: ./swiftformat-${{ steps.fetch_latest_tag.outputs.tag }}-linux-amd64.deb
           asset_name: swiftformat-${{ steps.fetch_latest_tag.outputs.tag }}-linux-amd64.deb
           asset_content_type: application/octet-stream
