@@ -32,10 +32,10 @@ jobs:
           )
           if [ "$RELEASE" = "200" ]; then
             echo "Release for tag $TAG already exists."
-            echo "true" >> $GITHUB_OUTPUT
+            echo "result=true" >> $GITHUB_OUTPUT
           else
             echo "Release for tag $TAG does not exist yet."
-            echo "false" >> $GITHUB_OUTPUT
+            echo "result=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Checkout SwiftFormat
