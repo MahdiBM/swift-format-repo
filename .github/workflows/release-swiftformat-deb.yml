@@ -72,6 +72,7 @@ jobs:
           prerelease: false
 
       - name: Upload .deb Package to release
+        if: ${{ steps.check-already-exists.outputs.result == 'false' }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
